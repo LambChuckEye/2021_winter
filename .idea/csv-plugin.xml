@@ -45,6 +45,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\人工智能与机器学习\1. 线性回归\result3.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

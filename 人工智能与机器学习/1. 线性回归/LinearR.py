@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
-from d2l import torch as d2l
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
@@ -24,7 +23,7 @@ def get_numeric_and_non(raw_data):
     # 数字字段
     numeric_colmuns = []
     # int和float
-    numeric_colmuns.extend(list(raw_data.dtypes[raw_data.dtypes == (np.int64 or np.float64)].index))
+    numeric_colmuns.extend(list(raw_data.select_dtypes(include=[np.int64, np.float64]).columns))
     # numeric_colmuns.remove('SalePrice')
     # numeric_colmuns.append('SalePrice')
     # 文字字段
@@ -37,13 +36,23 @@ def get_numeric_and_non(raw_data):
     return numeric_data, non_numeric_data
 
 
-def deal_nan(data, fill):
+def deal_nan_num(data):
     nan_columns = np.any(pd.isna(data), axis=0)
     # 获取标签
     nan_columns = list(nan_columns[nan_columns == True].index)
     # 将nan变为0
     for i in nan_columns:
-        data[i] = data[i].fillna(fill)
+        data[i] = data[i].fillna(data[i].mean())
+    return data
+
+
+def deal_nan_non_num(data):
+    nan_columns = np.any(pd.isna(data), axis=0)
+    # 获取标签
+    nan_columns = list(nan_columns[nan_columns == True].index)
+    # 将nan变为0
+    for i in nan_columns:
+        data[i] = data[i].fillna('N/A')
     return data
 
 
@@ -59,6 +68,7 @@ def mapping(data):
     return mapping_table
 
 
+# 归一化
 def norm(data):
     means, maxs, mins = dict(), dict(), dict()
     for col in data:
@@ -70,11 +80,17 @@ def norm(data):
 
 def load(filename):
     raw_data = pd.read_csv(filename)
+
+    # 显示缺失值百分比
+    missing_train_df = 100 * raw_data.isnull().mean()
+    missing_train_df[missing_train_df.values > 0].sort_values(ascending=False)
+    print(missing_train_df[missing_train_df.values > 0].sort_values(ascending=False))
+
     # 获取文字与数字部分
     numeric_data, non_numeric_data = get_numeric_and_non(raw_data)
     # 去除nan
-    numeric_data = deal_nan(numeric_data, 0)
-    non_numeric_data = deal_nan(non_numeric_data, 'N/A')
+    numeric_data = deal_nan_num(numeric_data)
+    non_numeric_data = deal_nan_non_num(non_numeric_data)
     # 文字部分做映射
     mapping_table = mapping(non_numeric_data)
     # 合并
@@ -83,7 +99,7 @@ def load(filename):
 
 def train(model, x, y, loss, optimizer, epoch):
     # gpu训练
-    device = d2l.try_gpu()
+    device = try_gpu()
     model.to(device)
     x = x.to(device)
     y = y.to(device)
@@ -115,8 +131,10 @@ def prediction(data, model, device):
 
 if __name__ == '__main__':
     train_data = load('data/train.csv')
+
     features_to_drop = ['PoolQC', 'MiscFeature', 'Alley', 'Fence', 'FireplaceQu']
     train_data.drop(features_to_drop, axis=1, inplace=True)
+
     # 标准化
     train_data, means, maxs, mins = norm(train_data)
     # 分离x，y
@@ -128,16 +146,14 @@ if __name__ == '__main__':
 
     net = nn.Sequential(nn.Linear(x.shape[1], 256), nn.ReLU(), nn.Dropout(0.5),
                         nn.Linear(256, 512), nn.ReLU(), nn.Dropout(0.5),
-                        nn.Linear(512, 1024), nn.ReLU(), nn.Dropout(0.5),
-                        nn.Linear(1024, 512), nn.ReLU(), nn.Dropout(0.5),
                         nn.Linear(512, 1))
     # 模型构建
     net.apply(init_weights)
     # 均方误差
     loss = nn.MSELoss()  # Adam优化，不依赖与学习率的选择
-    optimizer = torch.optim.Adam(net.parameters(), lr=1e-4 * 5, weight_decay=0.001)
+    optimizer = torch.optim.Adam(net.parameters(), lr=1e-4 * 5)
     # 训练
-    model, losses = train(net, x, y, loss, optimizer, 1000)
+    model, losses = train(net, x, y, loss, optimizer, 5000)
 
     # 画图
     plt.figure(figsize=(12, 10))
@@ -146,14 +162,17 @@ if __name__ == '__main__':
 
     # 测试集预测
     test_data = load('data/test.csv')
+
     test_data.drop(features_to_drop, axis=1, inplace=True)
+
     test_data, _, _, _ = norm(test_data)
 
     test_tensor = torch.tensor(test_data.values, dtype=torch.float)
 
-    y_hat = prediction(test_tensor, model, d2l.try_gpu())
+    y_hat = prediction(test_tensor, model, try_gpu())
     # y_hat = prediction(x, model, d2l.try_gpu())
 
+    # 复原
     y_hat = y_hat * (maxs['SalePrice'] - mins['SalePrice']) + means['SalePrice']
 
     raw_data = pd.read_csv('data/test.csv')
