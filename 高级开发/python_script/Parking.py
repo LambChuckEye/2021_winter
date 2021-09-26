@@ -348,7 +348,7 @@ class Parking:
             filename = 'with_marking.jpg'
             cv2.imwrite(filename, new_image)
 
-        return new_image
+        return new_image,cnt_empty,all_spots
 
     def predict_on_video(self, video_name, final_spot_dict, model, class_dictionary, device, ret=True):
         cap = cv2.VideoCapture(video_name)

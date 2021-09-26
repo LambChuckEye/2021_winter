@@ -83,8 +83,7 @@ def img_process(test_images, park, modelName):
 def img_test(test_images, final_spot_dict, model, class_dictionary, device):
     predicted_images = []
     for i in range(len(test_images)):
-        predicted_images.append(park.predict_on_image(test_images[i], final_spot_dict, model, class_dictionary, device))
-    return predicted_images
+        return park.predict_on_image(test_images[i], final_spot_dict, model, class_dictionary, device)
 
 
 def video_test(video_name, final_spot_dict, model, class_dictionary, device):
@@ -113,12 +112,11 @@ def predict(net, model, path, imageName):
     f = open(model, 'rb')
     final_spot_dict = pickle.load(f)
 
-    predicted_images = img_test(test_images, final_spot_dict, net, class_dictionary, d2l.try_gpu())
-    print(len(predicted_images))
-    for i in predicted_images:
-        im = Image.fromarray(i)
-        im.save(imageName)
-    return imageName
+    new_image, cnt_empty, all_spots = img_test(test_images, final_spot_dict, net, class_dictionary, d2l.try_gpu())
+
+    im = Image.fromarray(new_image)
+    im.save(imageName)
+    return imageName, cnt_empty, all_spots
 
 
 def init_spot(path, modelName):
@@ -129,6 +127,7 @@ def init_spot(path, modelName):
 
 if __name__ == '__main__':
     # 预测
-    predict('data/net', 'data/model.pickle', 'test_images/scene1380.jpg', 'data/test1.jpg')
+    imageName, cnt_empty, all_spots = predict('data/net', 'data/spot_dict.pickle', 'test_images/scene1380.jpg', 'data/test1.jpg')
+    print(imageName, cnt_empty, all_spots)
     # 初始化
     # init_spot('test_images/scene1380.jpg', 'data/model.pickle')

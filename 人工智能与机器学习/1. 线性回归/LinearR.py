@@ -80,7 +80,6 @@ def norm(data):
 
 def load(filename):
     raw_data = pd.read_csv(filename)
-
     # 显示缺失值百分比
     missing_train_df = 100 * raw_data.isnull().mean()
     missing_train_df[missing_train_df.values > 0].sort_values(ascending=False)
@@ -146,7 +145,8 @@ if __name__ == '__main__':
 
     net = nn.Sequential(nn.Linear(x.shape[1], 256), nn.ReLU(), nn.Dropout(0.5),
                         nn.Linear(256, 512), nn.ReLU(), nn.Dropout(0.5),
-                        nn.Linear(512, 1))
+                        nn.Linear(512, 256), nn.ReLU(), nn.Dropout(0.5),
+                        nn.Linear(256, 1))
     # 模型构建
     net.apply(init_weights)
     # 均方误差
@@ -155,8 +155,7 @@ if __name__ == '__main__':
     # 训练
     model, losses = train(net, x, y, loss, optimizer, 5000)
 
-    # 画图
-    plt.figure(figsize=(12, 10))
+    # 画图   plt.figure(figsize=(12, 10))
     plt.plot(range(len(losses)), losses)
     plt.show()
 
@@ -175,8 +174,8 @@ if __name__ == '__main__':
     # 复原
     y_hat = y_hat * (maxs['SalePrice'] - mins['SalePrice']) + means['SalePrice']
 
+    # 添加id行
     raw_data = pd.read_csv('data/test.csv')
-    # raw_data = pd.read_csv('data/train.csv')
 
     result = raw_data[['Id']]
     result['SalePrice'] = y_hat.cpu().detach().numpy()
