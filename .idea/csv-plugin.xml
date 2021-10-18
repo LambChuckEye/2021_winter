@@ -3,49 +3,14 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="\人工智能与机器学习\1. 线性回归\data\sample_submission.csv">
+        <entry key="\代码\人工智能与深度学习\1. 线性回归\data\sample_submission.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\人工智能与机器学习\1. 线性回归\data\test.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\人工智能与机器学习\1. 线性回归\data\train.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\人工智能与机器学习\1. 线性回归\result.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\人工智能与机器学习\1. 线性回归\result1.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\人工智能与机器学习\1. 线性回归\result2.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\人工智能与机器学习\1. 线性回归\result3.csv">
+        <entry key="\代码\人工智能与深度学习\1. 线性回归\result.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

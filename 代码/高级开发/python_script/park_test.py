@@ -1,4 +1,7 @@
 from __future__ import division
+
+import sys
+
 import cv2
 import os, glob
 
@@ -11,7 +14,9 @@ from Parking import Parking
 import pickle
 from PIL import Image
 import numpy as np
+import warnings
 
+warnings.filterwarnings("ignore")
 cwd = os.getcwd()
 
 park = Parking()
@@ -126,8 +131,21 @@ def init_spot(path, modelName):
 
 
 if __name__ == '__main__':
+    a = []
+    for i in range(1, len(sys.argv)):
+        a.append((sys.argv[i]))
+    if a[0] == "predict":
+        # 1-网络模型2-规模模型3-待测样本4-渲染图名称
+        imageName, cnt_empty, all_spots = predict(a[1], a[2], a[3], a[4])
+        print(imageName, cnt_empty, all_spots)
+    elif a[0] == "init":
+        # 1-带初始化样本2-规模模型名称
+        init_spot(a[1], a[2])
+        print(a[2])
+
     # 预测
-    imageName, cnt_empty, all_spots = predict('data/net', 'data/spot_dict.pickle', 'test_images/scene1380.jpg', 'data/test1.jpg')
-    print(imageName, cnt_empty, all_spots)
+    # imageName, cnt_empty, all_spots = predict('data/net', 'data/spot_dict.pickle', 'test_images/scene1380.jpg',
+    #                                           'data/pic.jpg')
+    # print(imageName, cnt_empty, all_spots)
     # 初始化
     # init_spot('test_images/scene1380.jpg', 'data/model.pickle')
