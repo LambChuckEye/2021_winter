@@ -25,9 +25,7 @@
 
 **第三次作业 - 命名规范文档** 需要自己编写命名规范，照着阿里java开发规范抄就行。
 
-**项目代码** 选择若依框架实现的停车场管理系统，使用了java调用控制台调用python脚本，代码贼乱贼差凑活看。
-
-https://github.com/LambChuckEye/ParkingLotManagementSystemByRuoYi 
+**[项目代码](https://github.com/LambChuckEye/ParkingLotManagementSystemByRuoYi)** 选择若依框架实现的停车场管理系统，使用了java调用控制台调用python脚本，代码贼乱贼差凑活看。
 
 
 ## 3. 数据分析方法与R软件
